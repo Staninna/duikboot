@@ -38,11 +38,15 @@ impl BubbleType {
 #[derive(Component, Debug)]
 pub struct Bubble {
     lifetime: f32,
+    time_left: f32,
 }
 
 impl Bubble {
     pub fn new(lifetime: f32) -> Self {
-        Self { lifetime }
+        Self {
+            lifetime,
+            time_left: lifetime,
+        }
     }
 }
 
@@ -70,14 +74,21 @@ fn movement(time: Res<Time>, mut query: Query<(&Bubble, &mut Transform, &Velocit
     }
 }
 
-fn lifetime(time: Res<Time>, mut commands: Commands, mut query: Query<(Entity, &mut Bubble)>) {
-    for (entity, mut bubble) in query.iter_mut() {
+fn lifetime(
+    time: Res<Time>,
+    mut commands: Commands,
+    mut query: Query<(Entity, &mut Bubble, &mut TextureAtlasSprite)>,
+) {
+    for (entity, mut bubble, mut sprite) in query.iter_mut() {
         // decrease lifetime
-        bubble.lifetime -= time.delta_seconds();
+        bubble.time_left -= time.delta_seconds();
 
         // remove bubble if lifetime is 0
         if bubble.lifetime <= 0.0 {
             commands.entity(entity).despawn();
+        } else {
+            let some_color = &mut sprite.color;
+            some_color.set_a(bubble.time_left / bubble.lifetime);
         }
     }
 }
