@@ -1,4 +1,4 @@
-// TODO: Remove magic numbers
+//TODO: Magic numbers - https://trello.com/c/x7mMmM0X/3-magic-numbers
 
 use crate::{
     components::acceleration::Acceleration,
@@ -37,7 +37,7 @@ pub struct Trail {
     timer: Timer,
 }
 
-// TODO: Clean up this mess
+//TODO: Clean up spawn_player - https://trello.com/c/wBqebvSr/6-clean-up-spawnplayer
 fn spawn_player(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -50,8 +50,6 @@ fn spawn_player(
     let velocity = Velocity::zero();
     let ccd = Ccd::enabled();
     let acceleration = Acceleration::default();
-
-    // TODO
     let body = Collider::capsule(Vec2::new(-6.0, 0.0), Vec2::new(8.0, 0.0), 11.0);
     let pos = TransformBundle::from(Transform::from_xyz(120.0, 100.0, 0.0));
     let trail_timer = Trail {
@@ -154,7 +152,7 @@ fn rotation(
     }
 }
 
-// TODO: Clean up this mess
+//TODO: Clean up trail - https://trello.com/c/vkhgB7yi/7-clean-up-trail
 fn trail(
     time: Res<Time>,
     texture_atlas: Res<TextureAtlasResource>,
