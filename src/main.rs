@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-// TODO: https://youtu.be/zgi9MT60QYw?t=119
 
 mod components;
 mod entity;
