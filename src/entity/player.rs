@@ -1,15 +1,14 @@
-//TODO: Magic numbers - https://trello.com/c/x7mMmM0X/3-magic-numbers
+//TODO: Add comments - https://trello.com/c/8HXAWr31/9-add-comments
 
 use crate::{
     components::acceleration::Acceleration,
     entity::bubble::Bubble,
     resource::texture::TextureAtlasResource,
-    settings::{
-        bubble::NAME as BUBBLE_NAME,
-        player::{
-            FRICITON, GRAVITY_SCALE, MAX_SPEED, MOVEMENT_SPEED_MULTIPLIER, NAME, TEXTURE,
-            TEXTURE_SIZE,
-        },
+    settings::player::{
+        FRICITON, GRAVITY_SCALE, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_UP, MAX_SPEED, MIN_SPEED,
+        MOVEMENT_SPEED_MULTIPLIER, NAME, TEXTURE, TEXTURE_OFFSET, TEXTURE_PADDING,
+        TEXTURE_SHEET_SIZE, TEXTURE_SIZE, TRAIL_LIFETIME, TRAIL_NAME, TRAIL_RANDOM_VELOCITY_MAX,
+        TRAIL_RANDOM_VELOCITY_MIN, TRAIL_TICK, TRAIL_VELOCITY_MULTIPLIER,
     },
 };
 
@@ -37,6 +36,14 @@ pub struct Trail {
     timer: Timer,
 }
 
+impl Trail {
+    pub fn new(lifetime: f32) -> Self {
+        Trail {
+            timer: Timer::from_seconds(lifetime, TimerMode::Repeating),
+        }
+    }
+}
+
 //TODO: Clean up spawn_player - https://trello.com/c/wBqebvSr/6-clean-up-spawnplayer
 fn spawn_player(
     mut commands: Commands,
@@ -44,20 +51,25 @@ fn spawn_player(
     mut texture_atlas: ResMut<Assets<TextureAtlas>>,
 ) {
     // Create components
+
+    // Defined in settings.rs
     let name = Name::new(NAME);
     let gravity = GravityScale(GRAVITY_SCALE);
+    let trail_timer = Trail::new(TRAIL_TICK);
+    let atlas = TextureAtlas::from_grid(
+        asset_server.load(TEXTURE),
+        TEXTURE_SIZE,
+        TEXTURE_SHEET_SIZE[0],
+        TEXTURE_SHEET_SIZE[1],
+        TEXTURE_PADDING,
+        TEXTURE_OFFSET,
+    );
+
+    // Defined in this file
     let body_type = RigidBody::Dynamic;
     let velocity = Velocity::zero();
     let ccd = Ccd::enabled();
     let acceleration = Acceleration::default();
-    let body = Collider::capsule(Vec2::new(-6.0, 0.0), Vec2::new(8.0, 0.0), 11.0);
-    let pos = TransformBundle::from(Transform::from_xyz(120.0, 100.0, 0.0));
-    let trail_timer = Trail {
-        timer: Timer::from_seconds(0.08, TimerMode::Repeating),
-    };
-
-    // Create sprite
-    let atlas = TextureAtlas::from_grid(asset_server.load(TEXTURE), TEXTURE_SIZE, 1, 1, None, None);
     let sprite = SpriteSheetBundle {
         texture_atlas: texture_atlas.add(atlas),
         sprite: TextureAtlasSprite {
@@ -66,6 +78,10 @@ fn spawn_player(
         },
         ..default()
     };
+
+    //TODO: Look into how to make constant - https://trello.com/c/bb7mUk8C/10-look-into-how-to-make-constant
+    let body = Collider::capsule(Vec2::new(-6.0, 0.0), Vec2::new(8.0, 0.0), 11.0);
+    let pos = TransformBundle::from(Transform::from_xyz(120.0, 100.0, 0.0));
 
     // Create Player character
     commands
@@ -80,8 +96,6 @@ fn spawn_player(
         .insert(acceleration)
         .insert(trail_timer)
         .insert(Player);
-
-    // Create trail
 }
 
 fn movement(
@@ -95,14 +109,14 @@ fn movement(
         let mut new_acceleration = Vec2::ZERO;
 
         // Get user input
-        if keyboard_input.pressed(KeyCode::W) && !keyboard_input.pressed(KeyCode::S) {
+        if keyboard_input.pressed(KEY_UP) && !keyboard_input.pressed(KEY_DOWN) {
             new_acceleration += Vec2::Y * MOVEMENT_SPEED_MULTIPLIER;
-        } else if keyboard_input.pressed(KeyCode::S) && !keyboard_input.pressed(KeyCode::W) {
+        } else if keyboard_input.pressed(KEY_DOWN) && !keyboard_input.pressed(KEY_UP) {
             new_acceleration -= Vec2::Y * MOVEMENT_SPEED_MULTIPLIER;
         }
-        if keyboard_input.pressed(KeyCode::A) && !keyboard_input.pressed(KeyCode::D) {
+        if keyboard_input.pressed(KEY_LEFT) && !keyboard_input.pressed(KEY_RIGHT) {
             new_acceleration -= Vec2::X * MOVEMENT_SPEED_MULTIPLIER;
-        } else if keyboard_input.pressed(KeyCode::D) && !keyboard_input.pressed(KeyCode::A) {
+        } else if keyboard_input.pressed(KEY_RIGHT) && !keyboard_input.pressed(KEY_LEFT) {
             new_acceleration += Vec2::X * MOVEMENT_SPEED_MULTIPLIER;
         }
 
@@ -113,7 +127,7 @@ fn movement(
         new_velocity += new_acceleration * time.delta_seconds();
 
         // Clamp velocity
-        new_velocity = new_velocity.clamp_length(0.0, MAX_SPEED);
+        new_velocity = new_velocity.clamp_length(MIN_SPEED, MAX_SPEED);
 
         // Update velocity
         velocity.linvel = new_velocity;
@@ -141,9 +155,6 @@ fn rotation(
             // Rotate 90 degrees to face the right direction
             * Quat::from_rotation_z(left_or_right as f32 * std::f32::consts::FRAC_PI_2);
 
-        // Smooth rotation
-        transform.rotation = transform.rotation.slerp(rotation, 0.1);
-
         // Update transform
         transform.rotation = rotation;
 
@@ -167,7 +178,7 @@ fn trail(
 
         // Create bubble
         let bubble_type = BubbleType::random();
-        let bubble = Bubble::new(1.5);
+        let bubble = Bubble::new(TRAIL_LIFETIME);
 
         // Create sprite
         let sprite = SpriteSheetBundle {
@@ -179,17 +190,17 @@ fn trail(
             ..default()
         };
 
-        let name = Name::new(BUBBLE_NAME);
+        let name = Name::new(TRAIL_NAME);
 
         let mut velocity = Velocity {
-            linvel: velocity.linvel * -0.1,
+            linvel: velocity.linvel * TRAIL_VELOCITY_MULTIPLIER,
             ..default()
         };
 
         // Spread bubbles
         velocity.linvel += Vec2::new(
-            rand::thread_rng().gen_range(-6.0..6.0),
-            rand::thread_rng().gen_range(-6.0..6.0),
+            rand::thread_rng().gen_range(TRAIL_RANDOM_VELOCITY_MIN..TRAIL_RANDOM_VELOCITY_MAX),
+            rand::thread_rng().gen_range(TRAIL_RANDOM_VELOCITY_MIN..TRAIL_RANDOM_VELOCITY_MAX),
         );
 
         let mut transform = transform.clone();
