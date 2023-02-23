@@ -20,13 +20,13 @@ fn main() {
 
     // Add plugins
     game.add_plugin(entity::camera::CameraPlugin)
-        .add_plugin(entity::background::BackgroundPlugin)
         .add_plugin(entity::player::PlayerPlugin)
         .add_plugin(entity::bubble::BubblePlugin);
 
     // Add debug plugins if debug build
     #[cfg(debug_assertions)]
     game.add_plugin(bevy::diagnostic::LogDiagnosticsPlugin::default())
+        .add_plugin(entity::background::BackgroundPlugin) // Temporary background for debugging
         .add_plugin(bevy::diagnostic::FrameTimeDiagnosticsPlugin::default())
         .add_plugin(bevy::diagnostic::EntityCountDiagnosticsPlugin::default())
         .add_plugin(bevy_prototype_debug_lines::DebugLinesPlugin::default())
