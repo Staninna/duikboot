@@ -2,12 +2,13 @@
 
 use crate::{
     components::acceleration::Acceleration,
-    entity::bubble::Bubble,
+    entity::bubble::{Bubble, BubbleType},
     resource::texture::TextureAtlasResource,
     settings::player::{
-        FRICITON, GRAVITY_SCALE, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_UP, MAX_SPEED, MIN_SPEED,
-        MOVEMENT_SPEED_MULTIPLIER, NAME, TEXTURE, TEXTURE_OFFSET, TEXTURE_PADDING,
-        TEXTURE_SHEET_SIZE, TEXTURE_SIZE, TRAIL_LIFETIME, TRAIL_NAME, TRAIL_RANDOM_VELOCITY_MAX,
+        COLLIDER_SHAPE_A, COLLIDER_SHAPE_B, COLLIDER_SHAPE_RADIUS, FRICITON, GRAVITY_SCALE,
+        KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_UP, MAX_SPEED, MIN_SPEED, MOVEMENT_SPEED_MULTIPLIER,
+        NAME, START_POSITION, TEXTURE, TEXTURE_OFFSET, TEXTURE_PADDING, TEXTURE_SHEET_SIZE,
+        TEXTURE_SIZE, TRAIL_LIFETIME, TRAIL_NAME, TRAIL_RANDOM_VELOCITY_MAX,
         TRAIL_RANDOM_VELOCITY_MIN, TRAIL_TICK, TRAIL_VELOCITY_MULTIPLIER,
     },
 };
@@ -15,8 +16,6 @@ use crate::{
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use rand::Rng;
-
-use super::bubble::BubbleType;
 
 pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
@@ -44,7 +43,6 @@ impl Trail {
     }
 }
 
-//TODO: Clean up spawn_player - https://trello.com/c/wBqebvSr/6-clean-up-spawnplayer
 fn spawn_player(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -56,7 +54,9 @@ fn spawn_player(
     let name = Name::new(NAME);
     let gravity = GravityScale(GRAVITY_SCALE);
     let trail_timer = Trail::new(TRAIL_TICK);
-    let atlas = TextureAtlas::from_grid(
+    let body = Collider::capsule(COLLIDER_SHAPE_A, COLLIDER_SHAPE_B, COLLIDER_SHAPE_RADIUS);
+    let pos = START_POSITION;
+    let texture = TextureAtlas::from_grid(
         asset_server.load(TEXTURE),
         TEXTURE_SIZE,
         TEXTURE_SHEET_SIZE[0],
@@ -65,23 +65,19 @@ fn spawn_player(
         TEXTURE_OFFSET,
     );
 
-    // Defined in this file
+    // Defined in this file (won't change)
     let body_type = RigidBody::Dynamic;
     let velocity = Velocity::zero();
-    let ccd = Ccd::enabled();
+    let ccd = Ccd::disabled();
     let acceleration = Acceleration::default();
     let sprite = SpriteSheetBundle {
-        texture_atlas: texture_atlas.add(atlas),
+        texture_atlas: texture_atlas.add(texture),
         sprite: TextureAtlasSprite {
             index: 0,
             ..default()
         },
         ..default()
     };
-
-    //TODO: Look into how to make constant - https://trello.com/c/bb7mUk8C/10-look-into-how-to-make-constant
-    let body = Collider::capsule(Vec2::new(-6.0, 0.0), Vec2::new(8.0, 0.0), 11.0);
-    let pos = TransformBundle::from(Transform::from_xyz(120.0, 100.0, 0.0));
 
     // Create Player character
     commands
