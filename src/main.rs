@@ -20,6 +20,7 @@ fn main() {
 
     // Add plugins
     game.add_plugin(entity::camera::CameraPlugin)
+        .add_plugin(entity::background::BackgroundPlugin)
         .add_plugin(entity::player::PlayerPlugin)
         .add_plugin(entity::bubble::BubblePlugin);
 
