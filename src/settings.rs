@@ -4,6 +4,9 @@ use bevy::prelude::*;
 pub mod player {
     use super::*;
 
+    // Misc
+    pub const NAME: &str = "Player";
+
     // Texture
     pub const TEXTURE: &str = "texture/submarine/submarine.png";
     pub const TEXTURE_SIZE: Vec2 = Vec2::new(32.0, 22.0);
@@ -11,11 +14,8 @@ pub mod player {
     pub const TEXTURE_PADDING: Option<Vec2> = None;
     pub const TEXTURE_OFFSET: Option<Vec2> = None;
 
-    // Entity
-    pub const NAME: &str = "Player";
-    pub const GRAVITY_SCALE: f32 = 0.25;
-
     // Movement
+    pub const GRAVITY_SCALE: f32 = 0.25;
     pub const MOVEMENT_SPEED_MULTIPLIER: f32 = 550.0;
     pub const FRICITON: f32 = 0.985;
     pub const MAX_SPEED: f32 = 200.0;
@@ -40,7 +40,10 @@ pub mod player {
 pub mod bubble {
     use super::*;
 
-    // Entity
+    // Texture
     pub const TEXTURE: &str = "texture/particles/bubble.png";
     pub const TEXTURE_SIZE: Vec2 = Vec2::new(8.0, 8.0);
+    pub const TEXTURE_SHEET_SIZE: [usize; 2] = [3, 1];
+    pub const TEXTURE_PADDING: Option<Vec2> = None;
+    pub const TEXTURE_OFFSET: Option<Vec2> = None;
 }

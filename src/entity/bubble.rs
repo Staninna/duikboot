@@ -1,6 +1,8 @@
 use crate::{
     resource::texture::TextureAtlasResource,
-    settings::bubble::{TEXTURE, TEXTURE_SIZE},
+    settings::bubble::{
+        TEXTURE, TEXTURE_OFFSET, TEXTURE_PADDING, TEXTURE_SHEET_SIZE, TEXTURE_SIZE,
+    },
 };
 
 use bevy::prelude::*;
@@ -55,11 +57,15 @@ fn load_assets(
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     asset_server: Res<AssetServer>,
 ) {
-    // Load texture
-    let bubble_atlas = asset_server.load(TEXTURE);
-
-    // Create/save texture
-    let texture_atlas = TextureAtlas::from_grid(bubble_atlas, TEXTURE_SIZE, 3, 1, None, None);
+    // Load/save texture
+    let texture_atlas = TextureAtlas::from_grid(
+        asset_server.load(TEXTURE),
+        TEXTURE_SIZE,
+        TEXTURE_SHEET_SIZE[0],
+        TEXTURE_SHEET_SIZE[1],
+        TEXTURE_PADDING,
+        TEXTURE_OFFSET,
+    );
     let handle = texture_atlases.add(texture_atlas);
     commands.insert_resource(TextureAtlasResource::new(handle));
 }
