@@ -16,8 +16,9 @@ pub mod player {
     pub const TEXTURE_OFFSET: Option<Vec2> = None;
 
     // Collider
-    pub const COLLIDER_SHAPE_A: Vec2 = Vec2::new(-TEXTURE_SIZE.x / 4.0, 0.0);
-    pub const COLLIDER_SHAPE_B: Vec2 = Vec2::new(TEXTURE_SIZE.x / 4.0, 0.0);
+    const COLLIDER_SHAPE_DIVIDER: f32 = 4.0;
+    pub const COLLIDER_SHAPE_A: Vec2 = Vec2::new(-TEXTURE_SIZE.x / COLLIDER_SHAPE_DIVIDER, 0.0);
+    pub const COLLIDER_SHAPE_B: Vec2 = Vec2::new(TEXTURE_SIZE.x / COLLIDER_SHAPE_DIVIDER, 0.0);
     pub const COLLIDER_SHAPE_RADIUS: f32 = TEXTURE_SIZE.y / 2.0;
 
     // Movement
