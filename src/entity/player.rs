@@ -163,7 +163,6 @@ fn rotation(
     }
 }
 
-//TODO: Clean up trail - https://trello.com/c/vkhgB7yi/7-clean-up-trail
 fn trail(
     time: Res<Time>,
     texture_atlas: Res<TextureAtlasResource>,
@@ -171,39 +170,39 @@ fn trail(
     mut query: Query<(&Player, &Transform, &Acceleration, &Velocity, &mut Trail)>,
 ) {
     for (_, transform, acceleration, velocity, mut trail) in query.iter_mut() {
+        // Skip when acceleration is zero or timer is not finished
         trail.timer.tick(time.delta());
         if !trail.timer.finished() || acceleration.acc == Vec2::ZERO {
             continue;
         }
 
         // Create bubble
-        let bubble_type = BubbleType::random();
         let bubble = Bubble::new(TRAIL_LIFETIME);
+        let name = Name::new(TRAIL_NAME);
+        let mut velocity = velocity.clone();
+        let mut transform = transform.clone();
 
         // Create sprite
+        let bubble_type = BubbleType::random() as usize;
         let sprite = SpriteSheetBundle {
             texture_atlas: texture_atlas.handle.clone(),
             sprite: TextureAtlasSprite {
-                index: bubble_type as usize,
+                index: bubble_type,
                 ..default()
             },
             ..default()
         };
 
-        let name = Name::new(TRAIL_NAME);
-
-        let mut velocity = Velocity {
-            linvel: velocity.linvel * TRAIL_VELOCITY_MULTIPLIER,
-            ..default()
-        };
+        // Set velocity
+        velocity.linvel *= TRAIL_VELOCITY_MULTIPLIER;
 
         // Spread bubbles
         velocity.linvel += Vec2::new(
-            rand::thread_rng().gen_range(TRAIL_RANDOM_VELOCITY_MIN..TRAIL_RANDOM_VELOCITY_MAX),
-            rand::thread_rng().gen_range(TRAIL_RANDOM_VELOCITY_MIN..TRAIL_RANDOM_VELOCITY_MAX),
+            rand::thread_rng().gen_range(TRAIL_RANDOM_VELOCITY_MIN..=TRAIL_RANDOM_VELOCITY_MAX),
+            rand::thread_rng().gen_range(TRAIL_RANDOM_VELOCITY_MIN..=TRAIL_RANDOM_VELOCITY_MAX),
         );
 
-        let mut transform = transform.clone();
+        // Set position to the back of the player
         transform.translation += transform.rotation * Vec3::new(-TEXTURE_SIZE.x / 1.5, 0.0, 0.0);
 
         // Spawn bubble
