@@ -68,7 +68,6 @@ fn spawn_player(
     // Defined in this file (won't change)
     let body_type = RigidBody::Dynamic;
     let velocity = Velocity::zero();
-    let ccd = Ccd::disabled();
     let acceleration = Acceleration::default();
     let sprite = SpriteSheetBundle {
         texture_atlas: texture_atlas.add(texture),
@@ -87,7 +86,6 @@ fn spawn_player(
         .insert(pos)
         .insert(velocity)
         .insert(gravity)
-        .insert(ccd)
         .insert(sprite)
         .insert(acceleration)
         .insert(trail_timer)
