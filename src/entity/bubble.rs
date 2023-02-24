@@ -70,8 +70,8 @@ fn load_assets(
     commands.insert_resource(TextureAtlasResource::new(handle));
 }
 
-fn movement(time: Res<Time>, mut query: Query<(&Bubble, &mut Transform, &Velocity)>) {
-    for (_, mut transform, velocity) in query.iter_mut() {
+fn movement(time: Res<Time>, mut query: Query<(&mut Transform, &Velocity, With<Bubble>)>) {
+    for (mut transform, velocity, _) in query.iter_mut() {
         // move bubble based on lifetime, velocity, and time
         let delta = time.delta_seconds();
         let x = transform.translation.x + velocity.linvel.x * delta;
@@ -90,11 +90,11 @@ fn lifetime(
         bubble.time_left -= time.delta_seconds();
 
         // remove bubble if lifetime is 0
-        if bubble.lifetime <= 0.0 {
-            commands.entity(entity).despawn();
-        } else {
+        if bubble.time_left > 0.0 {
             let some_color = &mut sprite.color;
             some_color.set_a(bubble.time_left / bubble.lifetime);
+        } else {
+            commands.entity(entity).despawn();
         }
     }
 }

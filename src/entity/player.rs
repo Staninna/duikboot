@@ -80,7 +80,8 @@ fn spawn_player(
 
     // Create Player character
     commands
-        .spawn(body_type)
+        .spawn(Player)
+        .insert(body_type)
         .insert(body)
         .insert(name)
         .insert(pos)
@@ -88,16 +89,15 @@ fn spawn_player(
         .insert(gravity)
         .insert(sprite)
         .insert(acceleration)
-        .insert(trail_timer)
-        .insert(Player);
+        .insert(trail_timer);
 }
 
 fn movement(
     time: Res<Time>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<(&Player, &mut Velocity, &mut Acceleration)>,
+    mut query: Query<(&mut Velocity, &mut Acceleration, With<Player>)>,
 ) {
-    for (_, mut velocity, mut acceleration) in query.iter_mut() {
+    for (mut velocity, mut acceleration, _) in query.iter_mut() {
         // Initialize variables
         let mut new_velocity = velocity.linvel;
         let mut new_acceleration = Vec2::ZERO;
@@ -133,13 +133,13 @@ fn movement(
 
 fn rotation(
     mut query: Query<(
-        &Player,
         &mut Velocity,
         &mut Transform,
         &mut TextureAtlasSprite,
+        With<Player>,
     )>,
 ) {
-    for (_, velocity, mut transform, mut sprite) in query.iter_mut() {
+    for (velocity, mut transform, mut sprite, _) in query.iter_mut() {
         // Get the direction of the velocity
         let direction = velocity.linvel.normalize_or_zero();
         let left_or_right = if direction.x > 0.0 { 1 } else { -1 };
@@ -161,9 +161,15 @@ fn trail(
     time: Res<Time>,
     texture_atlas: Res<TextureAtlasResource>,
     mut commands: Commands,
-    mut query: Query<(&Player, &Transform, &Acceleration, &Velocity, &mut Trail)>,
+    mut query: Query<(
+        &Transform,
+        &Acceleration,
+        &Velocity,
+        &mut Trail,
+        With<Player>,
+    )>,
 ) {
-    for (_, transform, acceleration, velocity, mut trail) in query.iter_mut() {
+    for (transform, acceleration, velocity, mut trail, _) in query.iter_mut() {
         // Skip when acceleration is zero or timer is not finished
         trail.timer.tick(time.delta());
         if !trail.timer.finished() || acceleration.acc == Vec2::ZERO {
