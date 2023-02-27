@@ -1,0 +1,32 @@
+name: Build
+
+on:
+    push:
+        paths:
+            - "**/*.rs"
+            - "**/*.toml"
+            - ".github/workflows/build.yml"
+    pull_request:
+        paths:
+            - "**/*.rs"
+            - "**/*.toml"
+            - ".github/workflows/build.yml"
+
+jobs:
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+            - name: Install Rust
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: stable
+            - name: Add targets
+              run: rustup target add x86_64-pc-windows-gnu x86_64-apple-darwin
+            - name: Build
+              uses: actions-rs/cargo@v1
+              with:
+                  command: build
+                  args: --release --target x86_64-pc-windows-gnu --target x86_64-apple-darwin --target x86_64-unknown-linux-gnu --verbose

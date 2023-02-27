@@ -1,0 +1,30 @@
+name: Clippy
+
+on:
+    push:
+        paths:
+            - "**/*.rs"
+            - "**/*.toml"
+            - ".github/workflows/clippy.yml"
+    pull_request:
+        paths:
+            - "**/*.rs"
+            - "**/*.toml"
+            - ".github/workflows/clippy.yml"
+
+jobs:
+    test:
+        name: Clippy
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+            - name: Install Rust
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: stable
+            - name: Clippy
+              uses: actions-rs/cargo@v1
+              with:
+                  command: clippy
+                  args: --all --all-targets --all-features -- -D warnings
