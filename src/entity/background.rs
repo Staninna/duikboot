@@ -29,12 +29,10 @@ fn spawn_background(mut commands: Commands) {
                 } else {
                     color = Color::rgb(1.0, 1.0, 1.0);
                 }
+            } else if (row + col) % 2 == 0 {
+                color = Color::rgb(0.5, 0.0, 0.5);
             } else {
-                if (row + col) % 2 == 0 {
-                    color = Color::rgb(0.5, 0.0, 0.5);
-                } else {
-                    color = Color::rgb(1.0, 0.0, 1.0);
-                }
+                color = Color::rgb(1.0, 0.0, 1.0);
             }
 
             commands.spawn(SpriteBundle {

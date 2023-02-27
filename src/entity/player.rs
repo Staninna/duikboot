@@ -179,8 +179,8 @@ fn trail(
         // Create bubble
         let bubble = Bubble::new(TRAIL_LIFETIME);
         let name = Name::new(TRAIL_NAME);
-        let mut velocity = velocity.clone();
-        let mut transform = transform.clone();
+        let mut velocity = *velocity;
+        let mut transform = *transform;
 
         // Create sprite
         let bubble_type = BubbleType::random() as usize;
@@ -209,7 +209,7 @@ fn trail(
         commands
             .spawn(sprite)
             .insert(bubble)
-            .insert(velocity.clone())
+            .insert(velocity)
             .insert(name)
             .insert(transform)
             .insert(velocity);
