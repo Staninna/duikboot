@@ -18,14 +18,14 @@ path = "src/server/main.rs"
 name = "shared"
 path = "src/shared/lib.rs"
 
-
+# Features
 [features]
 default = []
 dev = ["bevy/dynamic"]
 
+# Dependencies
 [dependencies]
-rand = "0.8"     # 0.8.5
-colorsys = "0.6" # 0.6.7
+rand = "0.8" # 0.8.5
 
 
 # Game engine
