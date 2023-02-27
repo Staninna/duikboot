@@ -5,6 +5,20 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+# Binaries
+[[bin]]
+name = "client"
+path = "src/client/main.rs"
+
+[[bin]]
+name = "server"
+path = "src/server/main.rs"
+
+[lib]
+name = "shared"
+path = "src/shared/lib.rs"
+
+
 [features]
 default = []
 dev = ["bevy/dynamic"]
