@@ -5,52 +5,20 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-# Binaries
-[[bin]]
-name = "client"
-path = "src/client/main.rs"
-
-[[bin]]
-name = "server"
-path = "src/server/main.rs"
-
-[lib]
-name = "shared"
-path = "src/shared/lib.rs"
-
-# Features
 [features]
 default = []
-dev = ["bevy/dynamic"]
+dev = ["bevy/dynamic", "bevy_rapier2d/debug-render-2d"]
 
-# Dependencies
 [dependencies]
-rand = "0.8" # 0.8.5
+rand = "0.8"
+bevy = "0.9"
+bevy_ggrs = "0.11"
+bevy_rapier2d = { version = "0.20", features = ["simd-stable", "parallel"] }
 
-
-# Game engine
-bevy = "0.9" # 0.9.1
-
-# Plugins
-
-# Physics engine
-bevy_rapier2d = { version = "0.20", features = [
-    "simd-stable",
-    "parallel",
-    "debug-render-2d",
-] } # 0.20.0
-
-# Debugging
-bevy-inspector-egui = "0.17" # 0.17.0
-bevy-inspector-egui-rapier = { version = "0.9", features = [
-    "rapier2d",
-] } # 0.9.0
-bevy_prototype_debug_lines = "0.9" # 0.9.0
-
-
-# Build opimizations
-[profile.dev]
-opt-level = 1
+# Development
+bevy-inspector-egui = "0.17"
+bevy-inspector-egui-rapier = { version = "0.9", features = ["rapier2d"] }
+bevy_prototype_debug_lines = "0.9"
 
 [profile.dev.package."*"]
 opt-level = 3
