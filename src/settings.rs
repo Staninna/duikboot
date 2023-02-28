@@ -33,8 +33,9 @@ pub mod player {
     pub const TRAIL_TICK: f32 = 0.1;
     pub const TRAIL_LIFETIME: f32 = 1.5;
     pub const TRAIL_VELOCITY_MULTIPLIER: f32 = -0.15;
-    pub const TRAIL_RANDOM_VELOCITY_MAX: f32 = 10.0;
-    pub const TRAIL_RANDOM_VELOCITY_MIN: f32 = -10.0;
+    pub const TRAIL_RANDOM_VELOCITY: f32 = 10.0;
+    pub const TRAIL_RANDOM_VELOCITY_RANGE: std::ops::RangeInclusive<f32> =
+        -TRAIL_RANDOM_VELOCITY..=TRAIL_RANDOM_VELOCITY;
 
     // Keys
     pub const KEY_UP: KeyCode = KeyCode::W;

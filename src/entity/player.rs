@@ -8,8 +8,8 @@ use crate::{
         COLLIDER_SHAPE_A, COLLIDER_SHAPE_B, COLLIDER_SHAPE_RADIUS, FRICITON, GRAVITY_SCALE,
         KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_UP, MAX_SPEED, MIN_SPEED, MOVEMENT_SPEED_MULTIPLIER,
         NAME, START_POSITION, TEXTURE, TEXTURE_OFFSET, TEXTURE_PADDING, TEXTURE_SHEET_SIZE,
-        TEXTURE_SIZE, TRAIL_LIFETIME, TRAIL_NAME, TRAIL_RANDOM_VELOCITY_MAX,
-        TRAIL_RANDOM_VELOCITY_MIN, TRAIL_TICK, TRAIL_VELOCITY_MULTIPLIER,
+        TEXTURE_SIZE, TRAIL_LIFETIME, TRAIL_NAME, TRAIL_RANDOM_VELOCITY_RANGE, TRAIL_TICK,
+        TRAIL_VELOCITY_MULTIPLIER,
     },
 };
 
@@ -198,8 +198,8 @@ fn trail(
 
         // Spread bubbles
         velocity.linvel += Vec2::new(
-            rand::thread_rng().gen_range(TRAIL_RANDOM_VELOCITY_MIN..=TRAIL_RANDOM_VELOCITY_MAX),
-            rand::thread_rng().gen_range(TRAIL_RANDOM_VELOCITY_MIN..=TRAIL_RANDOM_VELOCITY_MAX),
+            rand::thread_rng().gen_range(TRAIL_RANDOM_VELOCITY_RANGE),
+            rand::thread_rng().gen_range(TRAIL_RANDOM_VELOCITY_RANGE),
         );
 
         // Set position to the back of the player
