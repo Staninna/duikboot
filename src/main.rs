@@ -11,9 +11,7 @@ fn main() {
     let mut game = App::new();
 
     // Add default plugins
-    game.add_plugins(
-        DefaultPlugins, // Prevents blurry textures
-    );
+    game.add_plugins(DefaultPlugins);
 
     // Add pysics engine
     game.add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0));
@@ -29,7 +27,6 @@ fn main() {
         .add_plugin(entity::background::BackgroundPlugin) // Temporary background for debugging
         .add_plugin(bevy::diagnostic::FrameTimeDiagnosticsPlugin::default())
         .add_plugin(bevy::diagnostic::EntityCountDiagnosticsPlugin::default())
-        .add_plugin(bevy_prototype_debug_lines::DebugLinesPlugin::default())
         .add_plugin(bevy_rapier2d::render::RapierDebugRenderPlugin::default())
         .add_plugin(bevy_inspector_egui_rapier::InspectableRapierPlugin)
         .add_plugin(bevy_inspector_egui::quick::WorldInspectorPlugin);
