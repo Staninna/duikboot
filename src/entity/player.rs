@@ -1,8 +1,8 @@
 //TODO: Add comments - https://trello.com/c/8HXAWr31/9-add-comments
 
+use super::bubble::{Bubble, BubbleType};
 use crate::{
     components::acceleration::Acceleration,
-    entity::bubble::{Bubble, BubbleType},
     resource::texture::TextureAtlasResource,
     settings::player::{
         COLLIDER_SHAPE_A, COLLIDER_SHAPE_B, COLLIDER_SHAPE_RADIUS, FRICITON, GRAVITY_SCALE,

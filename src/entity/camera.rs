@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::entity::player::Player;
+use super::player::Player;
 
 pub struct CameraPlugin;
 impl Plugin for CameraPlugin {
