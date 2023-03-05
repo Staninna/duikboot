@@ -3,12 +3,16 @@ use bevy_rapier2d::prelude::*;
 
 mod components;
 mod entity;
+mod network;
 mod resource;
 mod settings;
 
 fn main() {
     // Create game
     let mut game = App::new();
+
+    // Initialize networking
+    network::init::init_network(&mut game);
 
     // Add default plugins
     game.add_plugins(DefaultPlugins);
@@ -29,7 +33,12 @@ fn main() {
         .add_plugin(bevy::diagnostic::EntityCountDiagnosticsPlugin::default())
         .add_plugin(bevy_rapier2d::render::RapierDebugRenderPlugin::default())
         .add_plugin(bevy_inspector_egui_rapier::InspectableRapierPlugin)
-        .add_plugin(bevy_inspector_egui::quick::WorldInspectorPlugin);
+        .add_plugin(bevy_inspector_egui::quick::WorldInspectorPlugin)
+        // Network debug
+        .insert_resource(crate::network::init::NetworkStatsTimer(
+            Timer::from_seconds(2.0, TimerMode::Repeating),
+        ))
+        .add_system(crate::network::init::print_network_stats_system);
 
     // Run game
     game.run();

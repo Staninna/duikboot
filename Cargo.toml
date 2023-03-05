@@ -12,6 +12,9 @@ dev = ["bevy/dynamic", "bevy_rapier2d/debug-render-2d"]
 [dependencies]
 rand = "0.8"
 bevy = "0.9"
+ggrs = "0.9"
+structopt = "0.3"
+bytemuck = "1.13"
 bevy_ggrs = "0.11"
 bevy_rapier2d = { version = "0.20", features = ["simd-stable", "parallel"] }
 
