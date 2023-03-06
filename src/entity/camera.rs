@@ -1,6 +1,5 @@
-use bevy::prelude::*;
-
 use super::player::Player;
+use bevy::prelude::*;
 
 pub struct CameraPlugin;
 impl Plugin for CameraPlugin {

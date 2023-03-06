@@ -4,7 +4,6 @@ use crate::{
         TEXTURE, TEXTURE_OFFSET, TEXTURE_PADDING, TEXTURE_SHEET_SIZE, TEXTURE_SIZE,
     },
 };
-
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 

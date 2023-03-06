@@ -1,5 +1,3 @@
-//TODO: Add comments - https://trello.com/c/8HXAWr31/9-add-comments
-
 use super::bubble::{Bubble, BubbleType};
 use crate::{
     components::acceleration::Acceleration,
@@ -12,7 +10,6 @@ use crate::{
         TRAIL_VELOCITY_MULTIPLIER,
     },
 };
-
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use rand::Rng;

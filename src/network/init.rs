@@ -1,10 +1,9 @@
+use super::{data::UserInput, input::input};
+use crate::settings::network::{FPS, NUMBER_PLAYERS, ROLLBACK_DEFAULT, START_PORT};
 use bevy::prelude::*;
 use bevy_ggrs::{GGRSPlugin, Session};
 use ggrs::{Config, SessionBuilder, UdpNonBlockingSocket};
 use std::net::SocketAddr;
-
-use super::{data::UserInput, input::input};
-use crate::settings::network::{FPS, NUMBER_PLAYERS, ROLLBACK_DEFAULT, START_PORT};
 
 pub struct GGRSConfig;
 impl Config for GGRSConfig {
