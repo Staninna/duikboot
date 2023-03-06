@@ -97,38 +97,39 @@ fn movement(
     keyboard_input: Res<Input<KeyCode>>,
     mut query: Query<(&mut Velocity, &mut Acceleration, With<Player>)>,
 ) {
-    for (mut velocity, mut acceleration, _) in query.iter_mut() {
-        // Initialize variables
-        let mut new_velocity = velocity.linvel;
-        let mut new_acceleration = Vec2::ZERO;
+    // Get components
+    let (mut velocity, mut acceleration, _) = query.single_mut();
 
-        // Get user input
-        if keyboard_input.pressed(KEY_UP) && !keyboard_input.pressed(KEY_DOWN) {
-            new_acceleration += Vec2::Y * MOVEMENT_SPEED_MULTIPLIER;
-        } else if keyboard_input.pressed(KEY_DOWN) && !keyboard_input.pressed(KEY_UP) {
-            new_acceleration -= Vec2::Y * MOVEMENT_SPEED_MULTIPLIER;
-        }
-        if keyboard_input.pressed(KEY_LEFT) && !keyboard_input.pressed(KEY_RIGHT) {
-            new_acceleration -= Vec2::X * MOVEMENT_SPEED_MULTIPLIER;
-        } else if keyboard_input.pressed(KEY_RIGHT) && !keyboard_input.pressed(KEY_LEFT) {
-            new_acceleration += Vec2::X * MOVEMENT_SPEED_MULTIPLIER;
-        }
+    // Initialize variables
+    let mut new_velocity = velocity.linvel;
+    let mut new_acceleration = Vec2::ZERO;
 
-        // Apply friction
-        new_velocity *= FRICITON;
-
-        // Apply acceleration
-        new_velocity += new_acceleration * time.delta_seconds();
-
-        // Clamp velocity
-        new_velocity = new_velocity.clamp_length(MIN_SPEED, MAX_SPEED);
-
-        // Update velocity
-        velocity.linvel = new_velocity;
-
-        // Update acceleration
-        acceleration.acc = new_acceleration;
+    // Get user input
+    if keyboard_input.pressed(KEY_UP) && !keyboard_input.pressed(KEY_DOWN) {
+        new_acceleration += Vec2::Y * MOVEMENT_SPEED_MULTIPLIER;
+    } else if keyboard_input.pressed(KEY_DOWN) && !keyboard_input.pressed(KEY_UP) {
+        new_acceleration -= Vec2::Y * MOVEMENT_SPEED_MULTIPLIER;
     }
+    if keyboard_input.pressed(KEY_LEFT) && !keyboard_input.pressed(KEY_RIGHT) {
+        new_acceleration -= Vec2::X * MOVEMENT_SPEED_MULTIPLIER;
+    } else if keyboard_input.pressed(KEY_RIGHT) && !keyboard_input.pressed(KEY_LEFT) {
+        new_acceleration += Vec2::X * MOVEMENT_SPEED_MULTIPLIER;
+    }
+
+    // Apply friction
+    new_velocity *= FRICITON;
+
+    // Apply acceleration
+    new_velocity += new_acceleration * time.delta_seconds();
+
+    // Clamp velocity
+    new_velocity = new_velocity.clamp_length(MIN_SPEED, MAX_SPEED);
+
+    // Update velocity
+    velocity.linvel = new_velocity;
+
+    // Update acceleration
+    acceleration.acc = new_acceleration;
 }
 
 fn rotation(
@@ -139,22 +140,23 @@ fn rotation(
         With<Player>,
     )>,
 ) {
-    for (velocity, mut transform, mut sprite, _) in query.iter_mut() {
-        // Get the direction of the velocity
-        let direction = velocity.linvel.normalize_or_zero();
-        let left_or_right = if direction.x > 0.0 { 1 } else { -1 };
+    // Get components
+    let (velocity, mut transform, mut sprite, _) = query.single_mut();
 
-        // Calculate rotation
-        let rotation = Quat::from_rotation_z(-(left_or_right as f32 * direction.y).acos())
+    // Get the direction of the velocity
+    let direction = velocity.linvel.normalize_or_zero();
+    let left_or_right = if direction.x > 0.0 { 1 } else { -1 };
+
+    // Calculate rotation
+    let rotation = Quat::from_rotation_z(-(left_or_right as f32 * direction.y).acos())
             // Rotate 90 degrees to face the right direction
             * Quat::from_rotation_z(left_or_right as f32 * std::f32::consts::FRAC_PI_2);
 
-        // Update transform
-        transform.rotation = rotation;
+    // Update transform
+    transform.rotation = rotation;
 
-        // Update sprite
-        sprite.flip_y = left_or_right == -1;
-    }
+    // Update sprite
+    sprite.flip_y = left_or_right == -1;
 }
 
 fn trail(
@@ -169,49 +171,50 @@ fn trail(
         With<Player>,
     )>,
 ) {
-    for (transform, acceleration, velocity, mut trail, _) in query.iter_mut() {
-        // Skip when acceleration is zero or timer is not finished
-        trail.timer.tick(time.delta());
-        if !trail.timer.finished() || acceleration.acc == Vec2::ZERO {
-            continue;
-        }
+    // Get components
+    let (transform, acceleration, velocity, mut trail, _) = query.single_mut();
 
-        // Create bubble
-        let bubble = Bubble::new(TRAIL_LIFETIME);
-        let name = Name::new(TRAIL_NAME);
-        let mut velocity = *velocity;
-        let mut transform = *transform;
-
-        // Create sprite
-        let bubble_type = BubbleType::random() as usize;
-        let sprite = SpriteSheetBundle {
-            texture_atlas: texture_atlas.handle.clone(),
-            sprite: TextureAtlasSprite {
-                index: bubble_type,
-                ..default()
-            },
-            ..default()
-        };
-
-        // Set velocity
-        velocity.linvel *= TRAIL_VELOCITY_MULTIPLIER;
-
-        // Spread bubbles
-        velocity.linvel += Vec2::new(
-            rand::thread_rng().gen_range(TRAIL_RANDOM_VELOCITY_RANGE),
-            rand::thread_rng().gen_range(TRAIL_RANDOM_VELOCITY_RANGE),
-        );
-
-        // Set position to the back of the player
-        transform.translation += transform.rotation * Vec3::new(-TEXTURE_SIZE.x / 1.5, 0.0, 0.0);
-
-        // Spawn bubble
-        commands
-            .spawn(sprite)
-            .insert(bubble)
-            .insert(velocity)
-            .insert(name)
-            .insert(transform)
-            .insert(velocity);
+    // Skip when acceleration is zero or timer is not finished
+    trail.timer.tick(time.delta());
+    if !trail.timer.finished() || acceleration.acc == Vec2::ZERO {
+        return;
     }
+
+    // Create bubble
+    let bubble = Bubble::new(TRAIL_LIFETIME);
+    let name = Name::new(TRAIL_NAME);
+    let mut velocity = *velocity;
+    let mut transform = *transform;
+
+    // Create sprite
+    let bubble_type = BubbleType::random() as usize;
+    let sprite = SpriteSheetBundle {
+        texture_atlas: texture_atlas.handle.clone(),
+        sprite: TextureAtlasSprite {
+            index: bubble_type,
+            ..default()
+        },
+        ..default()
+    };
+
+    // Set velocity
+    velocity.linvel *= TRAIL_VELOCITY_MULTIPLIER;
+
+    // Spread bubbles
+    velocity.linvel += Vec2::new(
+        rand::thread_rng().gen_range(TRAIL_RANDOM_VELOCITY_RANGE),
+        rand::thread_rng().gen_range(TRAIL_RANDOM_VELOCITY_RANGE),
+    );
+
+    // Set position to the back of the player
+    transform.translation += transform.rotation * Vec3::new(-TEXTURE_SIZE.x / 1.5, 0.0, 0.0);
+
+    // Spawn bubble
+    commands
+        .spawn(sprite)
+        .insert(bubble)
+        .insert(velocity)
+        .insert(name)
+        .insert(transform)
+        .insert(velocity);
 }
