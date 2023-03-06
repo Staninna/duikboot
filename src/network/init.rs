@@ -3,7 +3,7 @@ use bevy_ggrs::{GGRSPlugin, Session};
 use ggrs::{Config, SessionBuilder, UdpNonBlockingSocket};
 use std::net::SocketAddr;
 
-use super::data::UserInput;
+use super::{data::UserInput, input::input};
 use crate::settings::network::{FPS, NUMBER_PLAYERS, ROLLBACK_DEFAULT, START_PORT};
 
 pub struct GGRSConfig;
@@ -51,25 +51,6 @@ pub fn init_network(app: &mut App) {
         )
         .build(app);
     app.insert_resource(Session::P2PSession(sess));
-}
-
-fn input(_handle: In<ggrs::PlayerHandle>, keyboard_input: Res<Input<KeyCode>>) -> UserInput {
-    let mut input: u8 = 0;
-
-    if keyboard_input.pressed(KeyCode::W) {
-        input |= 0b00000001;
-    }
-    if keyboard_input.pressed(KeyCode::A) {
-        input |= 0b00000010;
-    }
-    if keyboard_input.pressed(KeyCode::S) {
-        input |= 0b00000100;
-    }
-    if keyboard_input.pressed(KeyCode::D) {
-        input |= 0b00001000;
-    }
-
-    UserInput { input }
 }
 
 #[derive(Resource)]
