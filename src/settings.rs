@@ -3,7 +3,7 @@ use bevy::prelude::*;
 // Network
 pub mod network {
     // Misc
-    pub const NUMBER_PLAYERS: usize = 6;
+    pub const NUMBER_PLAYERS: usize = 2;
     pub const FPS: usize = 60;
     pub const ROLLBACK_DEFAULT: &str = "rollback";
     pub const START_PORT: usize = 12345;
