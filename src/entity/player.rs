@@ -11,6 +11,7 @@ use crate::{
     },
 };
 use bevy::prelude::*;
+use bevy_ggrs::{Rollback, RollbackIdProvider};
 use bevy_rapier2d::prelude::*;
 use rand::Rng;
 
@@ -41,6 +42,7 @@ impl Trail {
 }
 
 fn spawn_player(
+    mut rip: ResMut<RollbackIdProvider>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlas: ResMut<Assets<TextureAtlas>>,
@@ -63,6 +65,7 @@ fn spawn_player(
     );
 
     // Defined in this file (won't change)
+    let rollback = Rollback::new(rip.next_id());
     let body_type = RigidBody::Dynamic;
     let velocity = Velocity::zero();
     let acceleration = Acceleration::default();
@@ -86,7 +89,8 @@ fn spawn_player(
         .insert(gravity)
         .insert(sprite)
         .insert(acceleration)
-        .insert(trail_timer);
+        .insert(trail_timer)
+        .insert(rollback);
 }
 
 fn movement(
