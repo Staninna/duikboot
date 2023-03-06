@@ -51,28 +51,3 @@ pub fn init_network(app: &mut App) {
         .build(app);
     app.insert_resource(Session::P2PSession(sess));
 }
-
-#[derive(Resource)]
-pub struct NetworkStatsTimer(pub Timer);
-pub fn print_network_stats_system(
-    time: Res<Time>,
-    mut timer: ResMut<NetworkStatsTimer>,
-    p2p_session: Option<Res<Session<GGRSConfig>>>,
-) {
-    // print only when timer runs out
-    if timer.0.tick(time.delta()).just_finished() {
-        if let Some(sess) = p2p_session {
-            match sess.as_ref() {
-                Session::P2PSession(s) => {
-                    let num_players = s.num_players();
-                    for i in 0..num_players {
-                        if let Ok(stats) = s.network_stats(i) {
-                            println!("NetworkStats for player {}: {:?}", i, stats);
-                        }
-                    }
-                }
-                _ => panic!("This examples focuses on p2p."),
-            }
-        }
-    }
-}

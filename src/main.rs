@@ -33,12 +33,7 @@ fn main() {
         .add_plugin(bevy::diagnostic::EntityCountDiagnosticsPlugin::default())
         .add_plugin(bevy_rapier2d::render::RapierDebugRenderPlugin::default())
         .add_plugin(bevy_inspector_egui_rapier::InspectableRapierPlugin)
-        .add_plugin(bevy_inspector_egui::quick::WorldInspectorPlugin)
-        // Network debug
-        .insert_resource(crate::network::init::NetworkStatsTimer(
-            Timer::from_seconds(2.0, TimerMode::Repeating),
-        ))
-        .add_system(crate::network::init::print_network_stats_system);
+        .add_plugin(bevy_inspector_egui::quick::WorldInspectorPlugin);
 
     // Run game
     game.run();
