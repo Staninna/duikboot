@@ -46,11 +46,15 @@ pub mod player {
     pub const TRAIL_RANDOM_VELOCITY_RANGE: std::ops::RangeInclusive<f32> =
         -TRAIL_RANDOM_VELOCITY..=TRAIL_RANDOM_VELOCITY;
 
-    // Keys
+    // Input keys/flags
     pub const KEY_UP: KeyCode = KeyCode::W;
     pub const KEY_DOWN: KeyCode = KeyCode::S;
     pub const KEY_LEFT: KeyCode = KeyCode::A;
     pub const KEY_RIGHT: KeyCode = KeyCode::D;
+    pub const FLAG_UP: u8 = 0b0000_0001;
+    pub const FLAG_DOWN: u8 = 0b0000_0010;
+    pub const FLAG_LEFT: u8 = 0b0000_0100;
+    pub const FLAG_RIGHT: u8 = 0b0000_1000;
 }
 
 // Bubble
