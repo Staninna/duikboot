@@ -1,7 +1,12 @@
 use super::{data::UserInput, input::input};
-use crate::settings::network::{FPS, NUMBER_PLAYERS, ROLLBACK_DEFAULT, START_PORT};
+use crate::{
+    components::acceleration::Acceleration,
+    entity::player::movement,
+    settings::network::{FPS, NUMBER_PLAYERS, ROLLBACK_DEFAULT, START_PORT},
+};
 use bevy::prelude::*;
 use bevy_ggrs::{GGRSPlugin, Session};
+use bevy_rapier2d::prelude::*;
 use ggrs::{Config, SessionBuilder, UdpNonBlockingSocket};
 use std::net::SocketAddr;
 
@@ -44,10 +49,14 @@ pub fn init_network(app: &mut App) {
     // Create the GGRS plugin
     GGRSPlugin::<GGRSConfig>::new()
         .with_update_frequency(FPS)
+        .register_rollback_component::<Acceleration>()
+        .register_rollback_component::<Transform>()
+        .register_rollback_component::<Velocity>()
         .with_input_system(input)
-        .with_rollback_schedule(
-            Schedule::default().with_stage(ROLLBACK_DEFAULT, SystemStage::parallel()),
-        )
+        .with_rollback_schedule(Schedule::default().with_stage(
+            ROLLBACK_DEFAULT,
+            SystemStage::parallel().with_system(movement),
+        ))
         .build(app);
     app.insert_resource(Session::P2PSession(sess));
 }
